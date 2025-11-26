@@ -9,7 +9,7 @@ class CardExtractor:
         self.debug = debug
 
         if self.img is None:
-            raise ValueError(f"Could not read image from {file_path}")
+            raise ValueError(f'Could not read image from {file_path}')
 
     def _display(self, img, max_dim=1000):
         if not self.debug:
@@ -21,7 +21,7 @@ class CardExtractor:
         new_h = int(h * scale)
 
         img = cv2.resize(img, (new_w, new_h))
-        cv2.imshow("Displayed Image", img)
+        cv2.imshow('Displayed Image', img)
         cv2.waitKey(0)
 
     def _preprocess(self):
