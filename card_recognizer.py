@@ -9,6 +9,15 @@ from numpy.linalg import norm
 from torchvision import transforms
 
 
+"""
+Card recognition using image embeddings.
+
+The embedding model and similarity approach are inspired by:
+- Tayyib Ul Hassan Gondal, "Image Embeddings for Enhanced Image Search"
+  https://medium.com/thedeephub/image-embeddings-for-enhanced-image-search-f35608752d42
+- PyTorch Hub ResNet example
+  https://pytorch.org/hub/pytorch_vision_resnet/
+"""
 class CardRecognizer():
     def __init__(self, ref_dir: Union[str, Path]):
         self.ref_dir: Path = Path(ref_dir)
