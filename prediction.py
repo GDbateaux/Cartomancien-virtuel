@@ -1,51 +1,53 @@
-import os
-from openai import OpenAI
-from dotenv import load_dotenv
+from ollama import chat
 
 
-load_dotenv()
-OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+SYSTEM_PROMPT = """
+Tu es un cartomancien expérimenté. Tu interprètes des tirages de tarot et
+tu réponds en français, avec un ton bienveillant et clair.
 
-if not OPENAI_API_KEY:
-    raise RuntimeError("OPENAI_API_KEY is not set in environment or .env file")
+Le consultant ne connaît pas la signification des cartes. Explique-les
+simplement, sans être fataliste. Ne parle pas d'un futur certain, mais de
+tendances, de possibilités et de conseils pratiques.
 
-client = OpenAI(api_key=OPENAI_API_KEY)
+Ne mentionne jamais l'informatique, le code, JSON ou le fait que tu es un modèle.
+Parle comme un humain.
+""".strip()
 
 def build_prompt(cards: list[str]):
+    """
+    Build the tarot reading prompt given a list of card names.
+
+    Note: The structure and wording of this prompt were refined with the help of
+    ChatGPT (OpenAI) to get clearer and more consistent readings.
+    """
     cards_desc = ''
     for card in cards:
         cards_desc += f'- {card}\n'
 
-    prompt = f"""
-You are a tarot reader. You receive the result of a tarot spread as structured data,
-and you must generate a tarot reading in French.
-
-The user does not know the meaning of the cards. Explain things clearly and kindly,
-without being fatalistic. Avoid talking about "certain future"; talk instead about
-tendencies, advice, and possible paths.
-
-Here is the spread (from left to right):
+    return f"""
+Voici le tirage (de gauche à droite) :
 
 {cards_desc}
-Write a reading in French with:
-- a short introduction (1-2 sentences),
-- one short paragraph for each card explaining its meaning and its role in the spread,
-- a short conclusion paragraph with global advice.
 
-Do not mention JSON or technical details in your answer. Just write the reading.
-    """
-    return prompt
+Écris une lecture de tarot en français avec :
+- une courte introduction (1-2 phrases),
+- un paragraphe pour chaque carte (sens + rôle dans le tirage),
+- une courte conclusion avec un conseil global.
+
+Ne renvoie que le texte de la lecture.
+    """.strip()
 
 def predict(cards: list[str]):
     prompt = build_prompt(cards)
 
-    response = client.responses.create(
-        model="gpt-4o-mini",
-        input=prompt,
-    )
+    response = chat('llama3.2:3b', 
+        messages=[
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {'role': 'user', 'content': prompt}
+        ])
 
     print("=== Réponse du modèle ===")
-    print(response.output_text)
+    print(response.message.content)
 
 
 if __name__ == "__main__":

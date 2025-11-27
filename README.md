@@ -6,6 +6,7 @@ To run this project, you need:
 
 - [Python](https://www.python.org/) installed on your system
 - [uv](https://docs.astral.sh/uv/) installed (Python package and environment manager)
+- [Ollama](https://ollama.com/) installed (for running the local LLM)
 
 ## Installation
 
@@ -22,6 +23,7 @@ This project relies in particular on:
 
 - The official OpenCV documentation: https://docs.opencv.org  
 - The official pytorch documentation: https://docs.pytorch.org/docs/stable/index.html
+- The official Ollama documentation: https://docs.ollama.com/
 - Assistance from ChatGPT (OpenAI) for design discussions, code structure suggestions, and help debugging errors 
 
 The image embedding and similarity approach used in this project was inspired by:
