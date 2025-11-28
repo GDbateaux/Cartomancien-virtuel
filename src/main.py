@@ -9,7 +9,7 @@ from tts import speak
 
 
 if __name__ == '__main__':
-    data_dir = Path(__file__).parent / 'data'
+    data_dir = Path(__file__).parent.parent / 'data'
     ref_dir = data_dir / 'cards'
     image_paths = sorted(
         list(data_dir.glob('*.jpg')) +
@@ -20,7 +20,7 @@ if __name__ == '__main__':
     tarot_reader = TarotReader()
 
     for img_path in image_paths:
-        cards = CardExtractor(str(img_path), debug=True).get_cards()
+        cards = CardExtractor(str(img_path)).get_cards()
         
 
         for card in cards:
