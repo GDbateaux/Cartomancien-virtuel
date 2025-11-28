@@ -1,6 +1,8 @@
 import cv2
 import numpy as np
 
+from card import Card
+
 
 class CardExtractor:
     def __init__(self, file_path, debug=False):
@@ -23,6 +25,7 @@ class CardExtractor:
         img = cv2.resize(img, (new_w, new_h))
         cv2.imshow('Displayed Image', img)
         cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
     def _preprocess(self):
         img_gray = cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY)
@@ -67,7 +70,7 @@ class CardExtractor:
         self._display(img_contours)
         return card_boxes
 
-    def get_cards(self):
+    def get_cards(self) -> list[Card]:
         mask = self._preprocess()
         boxes = self._extract_boxes(mask)
 
@@ -87,6 +90,6 @@ class CardExtractor:
 
             M = cv2.getPerspectiveTransform(b, card_pt)
             card = cv2.warpPerspective(self.img, M, (card_width,card_height))
-            cards.append(card)
-            self._display(card)
+            
+            cards.append(Card(box=b, image=card))
         return cards

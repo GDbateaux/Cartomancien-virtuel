@@ -15,6 +15,7 @@ From the project root:
 ```bash
 # Install all dependencies declared in pyproject.toml
 uv sync
+ollama pull llama3.2:3b
 ```
 
 ## Sources

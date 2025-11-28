@@ -18,7 +18,7 @@ The embedding model and similarity approach are inspired by:
 - PyTorch Hub ResNet example
   https://pytorch.org/hub/pytorch_vision_resnet/
 """
-class CardRecognizer():
+class CardRecognizer:
     def __init__(self, ref_dir: Union[str, Path]):
         self.ref_dir: Path = Path(ref_dir)
 
