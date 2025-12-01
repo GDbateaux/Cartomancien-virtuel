@@ -62,7 +62,7 @@ class CardRecognizer:
             emb = emb / n
         return emb
     
-    def recognize(self, img, top_k: int = 1):
+    def recognize(self, img, top_k: int = 1, min_score: float = None):
         img_flip = cv2.rotate(img, cv2.ROTATE_180)
         emb1 = self._img_to_embedding(img)
         emb2 = self._img_to_embedding(img_flip)
@@ -74,4 +74,8 @@ class CardRecognizer:
             score2 = float(np.dot(emb2, v))
             scores.append((k, max(score1, score2)))
         scores.sort(key=lambda x: x[1], reverse=True)
+
+        if min_score is not None:
+            scores = [s for s in scores if s[1] >= min_score]
+
         return scores[:top_k]

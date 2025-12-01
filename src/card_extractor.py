@@ -5,13 +5,18 @@ from card import Card
 
 
 class CardExtractor:
-    def __init__(self, file_path, debug=False):
-        self.file_path = file_path
-        self.img = cv2.imread(file_path)
+    def __init__(self, img: np.ndarray, debug: bool = False):
+        if img is None:
+            raise ValueError('img must not be None')
+        self.img = img
         self.debug = debug
 
-        if self.img is None:
+    @classmethod
+    def from_file(cls, file_path: str, debug: bool = False):
+        img = cv2.imread(file_path)
+        if img is None:
             raise ValueError(f'Could not read image from {file_path}')
+        return cls(img, debug=debug)
 
     def _display(self, img, max_dim=1000):
         if not self.debug:
@@ -61,7 +66,7 @@ class CardExtractor:
             epsilons = [0.01, 0.02, 0.03, 0.05]
             for e in epsilons:
                 approx = cv2.approxPolyDP(cnt, e * peri, True)
-                if len(approx) == 4:
+                if len(approx) == 4 and cv2.isContourConvex(approx):
                     card_boxes.append(approx)
                     break
 
