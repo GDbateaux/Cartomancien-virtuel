@@ -18,11 +18,19 @@ if not cap.isOpened():
 
 STABLE_SECONDS = 1
 NUM_CARDS = 3
+TIME_UNDER_THREE_CARDS = 1
+
 data_dir = Path(__file__).parent.parent / 'data'
 ref_dir = data_dir / 'cards'
+
 card_recognizer = CardRecognizer(ref_dir)
 tarot_reader = TarotReader()
 speaking_finish = True
+
+last_time = time.time()
+last_labels_detected = []
+reading_done = False
+under_three_since = None
 
 speak("Bonjour. Tirez trois cartes de tarot et placez-les devant la caméra.")
 
@@ -44,16 +52,35 @@ while True:
         current_labels.append(card.label)
         card.draw_on(frame)
     
-    if len(current_labels) == NUM_CARDS and speaking_finish is True:
+    if len(current_labels) == NUM_CARDS and speaking_finish and not reading_done:
+        current_sorted = sorted(current_labels)
+        last_labels_detected.sort()
+
+        if not last_labels_detected or any(x != y for x, y in zip(last_labels_detected, current_sorted)):
+            last_labels_detected = current_sorted.copy()
+            last_time = time.time()
+
         def worker(labels):
-            global speaking_finish
+            global speaking_finish, reading_done
             reading = tarot_reader.predict(labels)
             speak(reading)
             speaking_finish = True
+            reading_done = True
             
-        current_labels.sort()
-        speaking_finish = False
-        threading.Thread(target=worker, args=(current_labels,)).start()
+        if time.time() - last_time > STABLE_SECONDS:
+            print('start prediction')
+            speaking_finish = False
+            threading.Thread(target=worker, args=(current_labels,)).start()
+        under_three_since = None
+    else:
+        if len(current_labels) < NUM_CARDS:
+            if reading_done:
+                if under_three_since is None:
+                    under_three_since = time.time()
+                elif time.time() - under_three_since > TIME_UNDER_THREE_CARDS:
+                    reading_done = False
+                    last_labels_detected = []
+                    under_three_since = None
 
     cv2.imshow('frame', frame)
     if cv2.waitKey(1) == ord('q'):
@@ -61,36 +88,3 @@ while True:
  
 cap.release()
 cv2.destroyAllWindows()
-
-""" if __name__ == '__main__':
-    data_dir = Path(__file__).parent.parent / 'data'
-    ref_dir = data_dir / 'cards'
-    image_paths = sorted(
-        list(data_dir.glob('*.jpg')) +
-        list(data_dir.glob('*.png'))
-    )
-
-    card_recognizer = CardRecognizer(ref_dir)
-    tarot_reader = TarotReader()
-
-    for img_path in image_paths:
-        cards = CardExtractor.from_file(str(img_path)).get_cards()
-        
-
-        for card in cards:
-            best_label, best_score = card_recognizer.recognize(card.image)[0]
-            print(best_label, best_score)
-    
-            card.label = best_label
-            card.confidence = best_score
-
-            cv2.imshow('Card', card.image)
-            cv2.waitKey(0)
-        cv2.destroyAllWindows()
-        print(f'Extracted {len(cards)} cards from {img_path.name}')
-
-    #card_names = [card.label for card in cards]
-    card_names = ['le diable', "l'homme pendu", 'la mort']
-    reading = tarot_reader.predict(card_names)
-    print(reading)
-    speak(reading) """

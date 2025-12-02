@@ -21,6 +21,10 @@ class TarotReader:
             Le consultant ne connaît pas la signification des cartes. Explique-les
             simplement, sans être fataliste. Ne parle pas d'un futur certain, mais de
             tendances, de possibilités et de conseils pratiques.
+                                             
+            Tes réponses doivent toujours être très concises :
+              - 2 ou 3 phrases maximum,
+              - pas de listes, pas de titres.
 
             Ne mentionne jamais l'informatique, le code, JSON ou le fait que tu es un modèle.
             Parle comme un humain.
@@ -36,11 +40,14 @@ class TarotReader:
 
             {cards_desc}
 
-            Écris une lecture de tarot en français avec :
-            - une courte introduction (1-2 phrases),
-            - un paragraphe pour chaque carte (sens + rôle dans le tirage),
-            - une courte conclusion avec un conseil global.
+            Donne une interprétation globale en français qui :
+              - reste cohérente avec les significations classiques de ces cartes,
+              - relie les cartes entre elles dans une même idée (pas une explication technique),
+              - se limite strictement à 2 ou 3 phrases,
+              - inclut au moins une allusion explicite aux cartes (par exemple en les nommant
+                ou en évoquant clairement leur énergie).
 
+            N'utilise ni listes, ni titres, ni mise en forme spéciale.
             Ne renvoie que le texte de la lecture.
         """).strip()
 
