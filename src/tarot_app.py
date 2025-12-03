@@ -45,8 +45,8 @@ class TarotApp:
                 self.last_time = time.time()
 
             def worker(labels):
-                reading = self.tarot_reader.predict(labels)
-                speak(reading)
+                for sentence in self.tarot_reader.stream_predict(labels):
+                    speak(sentence)
                 self.speaking_finish = True
                 self.reading_done = True
 

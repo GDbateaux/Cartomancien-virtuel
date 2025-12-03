@@ -1,4 +1,5 @@
 import textwrap
+import re
 
 from tts import speak
 
@@ -65,8 +66,30 @@ class TarotReader:
         print(response.message.content)
         return response.message.content
 
+    def stream_predict(self, cards: list[str]):
+        prompt = self.build_prompt(cards)
+
+        response = chat(self.model_name, 
+            messages=[
+                {'role': 'system', 'content': self.SYSTEM_PROMPT},
+                {'role': 'user', 'content': prompt}
+            ],
+            stream=True,)
+        
+        print('=== Réponse du modèle ===')
+        sentence = ''
+        for chunk in response:
+            sentence += chunk.message.content
+            print(chunk.message.content, end='', flush=True)
+
+            if any(c in sentence for c in '.:?!'):
+                yield sentence
+                sentence = re.split(r'[\.\:\?\!]', sentence)[-1]
+        yield sentence
+
 if __name__ == '__main__':
     reader = TarotReader()
     test_cards = ['Le Bateleur', 'La Papesse', 'L\'Empereur']
-    prediction = reader.predict(test_cards)
-    speak(prediction)
+    for prediction in reader.stream_predict(test_cards):
+        speak(prediction)
+    speak(reader.predict(test_cards))
