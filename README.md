@@ -18,6 +18,25 @@ uv sync
 ollama pull llama3.2:3b
 ```
 
+## Tests
+
+To run the tests, use the following command:
+```bash
+uv run pytest
+```
+
+To measure test coverage, run:
+```bash
+uv run coverage run -m pytest
+uv run coverage report
+```
+
+To generate an HTML coverage report, run:
+```bash
+uv run coverage html
+```
+Then open htmlcov/index.html in your browser to inspect the detailed coverage.
+
 ## Sources
 
 This project relies in particular on:
