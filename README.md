@@ -25,7 +25,8 @@ This project relies in particular on:
 - The official OpenCV documentation: https://docs.opencv.org  
 - The official pytorch documentation: https://docs.pytorch.org/docs/stable/index.html
 - The official Ollama documentation: https://docs.ollama.com/
-- Assistance from ChatGPT (OpenAI) for design discussions, code structure suggestions, and help debugging errors 
+- The pytest documentation: https://docs.pytest.org/en/stable/contents.html
+- Assistance from ChatGPT (OpenAI) for design discussions, code structure suggestions, and help debugging errors
 
 The image embedding and similarity approach used in this project was inspired by:
 

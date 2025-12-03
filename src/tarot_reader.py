@@ -63,9 +63,3 @@ class TarotReader:
         print('=== Réponse du modèle ===')
         print(response.message.content)
         return response.message.content
-
-if __name__ == '__main__':
-    cards = ['le diable', "l'homme pendu", 'la mort']
-    reader = TarotReader()
-    reading = reader.predict(cards)
-    speak(reading)

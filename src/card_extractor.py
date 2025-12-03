@@ -47,8 +47,12 @@ class CardExtractor:
         return mask
 
     def _extract_boxes(self, mask):
-        contours, _ = cv2.findContours(
-            mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contours, hierarchy = cv2.findContours(
+            mask.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+        debug_contours_all = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR).copy()
+        cv2.drawContours(debug_contours_all, contours, -1, (0, 255, 0), 1)
+        self._display(debug_contours_all)
 
         h, w = mask.shape[:2]
         img_area = w * h
@@ -56,8 +60,8 @@ class CardExtractor:
         min_area = img_area * 0.01
         max_area = img_area * 0.80
 
-        card_boxes = []
-        for cnt in contours:
+        candidates = []
+        for i, cnt in enumerate(contours):
             area = cv2.contourArea(cnt)
             if area > max_area or area < min_area:
                 continue
@@ -67,8 +71,21 @@ class CardExtractor:
             for e in epsilons:
                 approx = cv2.approxPolyDP(cnt, e * peri, True)
                 if len(approx) == 4 and cv2.isContourConvex(approx):
-                    card_boxes.append(approx)
+                    candidates.append((i, approx))
                     break
+        
+        card_boxes = []
+        for i, approx in candidates:
+            parent_idx = hierarchy[0][i][3]
+            keep = True
+
+            while parent_idx != -1:
+                if any(parent_idx == candidate[0] for candidate in candidates):
+                    keep = False
+                    break
+                parent_idx = hierarchy[0][parent_idx][3]
+            if keep:
+                card_boxes.append(approx)
 
         img_contours = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR).copy()
         img_contours = cv2.drawContours(img_contours, card_boxes, -1, (255, 0, 0), 3)
