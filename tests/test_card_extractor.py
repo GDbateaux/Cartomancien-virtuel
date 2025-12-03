@@ -14,6 +14,10 @@ IMG_TEST_DIR = DATA_DIR / 'img_test'
         ('img1.jpg', 2),
         ('img2.jpg', 5),
         ('img3.jpg', 4),
+        ('img4.jpg', 1),
+        ('img5.jpg', 3),
+        ('img6.jpg', 4),
+        ('img7.jpg', 5),
     ],
 )
 def test_number_cards_extracted(filename, expected_count):
