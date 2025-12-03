@@ -29,6 +29,7 @@ class TarotReader:
             Ne mentionne jamais l'informatique, le code, JSON ou le fait que tu es un modèle.
             Parle comme un humain.
         """).strip()
+        self.predict(['fake card'])  # Warm-up the model
 
     def build_prompt(self, cards: list[str]):
         cards_desc = ''
@@ -63,3 +64,9 @@ class TarotReader:
         print('=== Réponse du modèle ===')
         print(response.message.content)
         return response.message.content
+
+if __name__ == '__main__':
+    reader = TarotReader()
+    test_cards = ['Le Bateleur', 'La Papesse', 'L\'Empereur']
+    prediction = reader.predict(test_cards)
+    speak(prediction)
