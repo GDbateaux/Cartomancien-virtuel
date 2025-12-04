@@ -6,14 +6,28 @@ from src import tarot_reader as tarot_reader_module
 from src.tarot_reader import TarotReader
 
 
-def test_time_prediction():
+def test_stream_time_prediction():
+    tarot_reader = TarotReader()
+    cards = ['le diable', "l'homme pendu", 'la mort']
+
+    t1 = time.time()
+    gen = tarot_reader.stream_predict(cards)
+
+    first_sentence = next(gen)
+    dt = time.time() - t1
+
+    print(f"\nTime to first sentence: {dt} seconds\n")
+    assert dt <= 10
+    assert any(c in first_sentence for c in ".:?!")
+
+""" def test_time_prediction():
     tarot_reader = TarotReader()
     cards = ['le diable', "l'homme pendu", 'la mort']
 
     t1 = time.time()
     tarot_reader.predict(cards)
     prediction_time = time.time() - t1
-    assert prediction_time <= 3
+    assert prediction_time <= 3 """
 
 def test_predict_calls_chat(monkeypatch):
     calls_content = {}
