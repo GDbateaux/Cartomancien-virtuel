@@ -1,8 +1,6 @@
 import textwrap
 import re
 
-from tts import speak
-
 from ollama import chat
 
 
@@ -88,8 +86,11 @@ class TarotReader:
         yield sentence
 
 if __name__ == '__main__':
+    from tts import TTS
+
     reader = TarotReader()
+    tts = TTS()
     test_cards = ['Le Bateleur', 'La Papesse', 'L\'Empereur']
     for prediction in reader.stream_predict(test_cards):
-        speak(prediction)
-    speak(reader.predict(test_cards))
+        tts.speak(prediction)
+    #tts.speak(reader.predict(test_cards))
