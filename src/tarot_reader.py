@@ -59,9 +59,6 @@ class TarotReader:
                 {'role': 'system', 'content': self.SYSTEM_PROMPT},
                 {'role': 'user', 'content': prompt}
             ])
-
-        print('=== Réponse du modèle ===')
-        print(response.message.content)
         return response.message.content
 
     def stream_predict(self, cards: list[str]):
