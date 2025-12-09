@@ -8,8 +8,31 @@ To run this project, you need:
 - [uv](https://docs.astral.sh/uv/) installed (Python package and environment manager)
 - [Ollama](https://ollama.com/) installed (for running the local LLM)
 
-## Installation
+## Installation (Automatic)
+### Linux / macOS
 
+From the project root:
+
+```bash
+./scripts/setup_project.sh
+```
+
+### Windows
+
+From the project root, in a terminal (cmd):
+```bat
+scripts\setup_project.bat
+```
+
+These scripts:
+
+- install Python dependencies with uv
+
+- pull the Ollama model llama3.2:3b
+
+- download the Piper French voice model fr_FR-tom-medium into data/voices
+
+## Installation (Manual)
 From the project root:
 
 ```bash
@@ -31,6 +54,13 @@ uv run python -m piper.download_voices fr_FR-tom-medium
 
 # (Optional) Download another French voice (Siwis) if you want to experiment
 uv run python -m piper.download_voices fr_FR-siwis-medium
+```
+
+## Run
+
+From the project root:
+```
+uv run python -m src.main
 ```
 
 ## Tests
@@ -57,7 +87,7 @@ Then open htmlcov/index.html in your browser to inspect the detailed coverage.
 This project relies in particular on:
 
 - The official OpenCV documentation: https://docs.opencv.org  
-- The official pytorch documentation: https://docs.pytorch.org/docs/stable/index.html
+- The official Pytorch documentation: https://docs.pytorch.org/docs/stable/index.html
 - The official Ollama documentation: https://docs.ollama.com/
 - The pytest documentation: https://docs.pytest.org/en/stable/contents.html
 - The piper documentation: https://github.com/OHF-Voice/piper1-gpl/blob/main/README.md
