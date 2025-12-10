@@ -30,7 +30,7 @@ class TarotReader:
         """).strip()
         self.predict(['fake card'])  # Warm-up the model
 
-    def build_prompt(self, cards: list[str]):
+    def _build_prompt(self, cards: list[str]):
         cards_desc = ''
         for card in cards:
             cards_desc += f'- {card}\n'
@@ -52,7 +52,7 @@ class TarotReader:
         """).strip()
 
     def predict(self, cards: list[str]):
-        prompt = self.build_prompt(cards)
+        prompt = self._build_prompt(cards)
 
         response = chat(self.model_name, 
             messages=[
@@ -62,7 +62,7 @@ class TarotReader:
         return response.message.content
 
     def stream_predict(self, cards: list[str]):
-        prompt = self.build_prompt(cards)
+        prompt = self._build_prompt(cards)
 
         response = chat(self.model_name, 
             messages=[

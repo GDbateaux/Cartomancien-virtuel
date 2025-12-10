@@ -102,4 +102,10 @@ The image embedding and similarity approach used in this project was inspired by
 - PyTorch Hub, *ResNet: Deep Residual Learning for Image Recognition*.  
   https://pytorch.org/hub/pytorch_vision_resnet/
 
+The RAG and question-answering components of this project were inspired by:
+
+- The tutorial “RAG + ChromaDB + Ollama: Python Guide for Beginners”: https://medium.com/@arunpatidar26/rag-chromadb-ollama-python-guide-for-beginners-30857499d0a0
+
+- The official ChromaDB documentation: https://docs.trychroma.com
+
 The texts in data/tarot_data are extracted from Wikipedia (CC BY-SA 4.0 license).

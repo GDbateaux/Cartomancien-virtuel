@@ -9,7 +9,9 @@ from tts import TTS
 
 
 class TarotApp:
-    # The user flow logic and the refactoring into the TarotApp class were designed and refined with help from ChatGPT 
+    """
+    Note: The user flow logic and the refactoring into the TarotApp class were designed and refined with help from ChatGPT 
+    """
     def __init__(self, ref_dir, stable_seconds = 1.0, num_cards = 3, time_under_three_cards = 1.0, model_name_tts='fr_FR-tom-medium.onnx'):
         self.STABLE_SECONDS = stable_seconds
         self.NUM_CARDS = num_cards

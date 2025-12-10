@@ -6,13 +6,6 @@ from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunct
 
 
 class TarotRag:
-    """
-    Retrieval-Augmented Generation (RAG) engine specialized for tarot knowledge.
-
-    This implementation is inspired by:
-    - the tutorial: https://medium.com/@arunpatidar26/rag-chromadb-ollama-python-guide-for-beginners-30857499d0a0
-    - the official ChromaDB documentation.
-    """
     def __init__(self, rebuild_index = True):
         self.embedding_fn = SentenceTransformerEmbeddingFunction(
             model_name='sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2'
@@ -65,7 +58,7 @@ class TarotRag:
         ids = [f'idx{i}' for i in range(len(chunks))]
         self.collection.add(ids=ids, documents=chunks)
     
-    def query_chroma(self, question, n_results = 2):
+    def query_chroma(self, question, n_results = 4):
         results = self.collection.query(
             query_texts=[question],
             n_results=n_results
