@@ -91,6 +91,7 @@ This project relies in particular on:
 - The official Ollama documentation: https://docs.ollama.com/
 - The pytest documentation: https://docs.pytest.org/en/stable/contents.html
 - The piper documentation: https://github.com/OHF-Voice/piper1-gpl/blob/main/README.md
+- The chroma documentation: https://docs.trychroma.com/docs
 - Assistance from ChatGPT (OpenAI) for design discussions, code structure suggestions, and help debugging errors
 
 The image embedding and similarity approach used in this project was inspired by:
@@ -100,3 +101,5 @@ The image embedding and similarity approach used in this project was inspired by
 
 - PyTorch Hub, *ResNet: Deep Residual Learning for Image Recognition*.  
   https://pytorch.org/hub/pytorch_vision_resnet/
+
+The texts in data/tarot_data are extracted from Wikipedia (CC BY-SA 4.0 license).

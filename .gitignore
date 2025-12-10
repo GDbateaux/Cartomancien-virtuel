@@ -4,3 +4,5 @@ __pycache__/
 .coverage
 *.onnx
 *.onnx.json
+*.bin
+*.sqlite3

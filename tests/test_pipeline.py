@@ -9,7 +9,7 @@ from src.tarot_app import TarotApp
 
 MAX_TIME_PER_IMAGE = 0.2
 DATA_DIR = Path(__file__).parent.parent / 'data'
-REF_DIR = DATA_DIR / "cards"
+REF_DIR = DATA_DIR / 'cards'
 IMG_TEST_DIR = DATA_DIR / 'img_test'
 app = TarotApp(ref_dir=REF_DIR)
 
@@ -25,7 +25,10 @@ app = TarotApp(ref_dir=REF_DIR)
         ('img7.jpg'),
     ],
 )
-def test_card_pipeline_speed(filename):
+def test_card_pipeline_speed(filename, monkeypatch):
+    monkeypatch.setattr(app.tts, 'speak', lambda text: None)
+    monkeypatch.setattr(app.tarot_reader, 'stream_predict', lambda cards: [])
+
     img_path = IMG_TEST_DIR / filename
     image = cv2.imread(img_path)
     num_runs = 10
@@ -35,7 +38,7 @@ def test_card_pipeline_speed(filename):
         t0 = time.time()
         app._process_frame(image)
         total_time += time.time() - t0
-    dt_mean = total_time / num_runs
-    print(f"{filename}: {dt_mean*1000:.1f} ms")
+    mean_time = total_time / num_runs
+    print(f'{filename}: {mean_time*1000:.1f} ms')
 
-    assert dt_mean < MAX_TIME_PER_IMAGE
+    assert mean_time < MAX_TIME_PER_IMAGE
