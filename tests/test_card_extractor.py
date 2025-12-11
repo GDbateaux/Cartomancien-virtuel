@@ -29,6 +29,6 @@ def test_init_raises_on_none_image():
         CardExtractor(img=None)
 
 def test_from_file_raises_on_missing_file():
-    img_path = IMG_TEST_DIR / "does_not_exist.jpg"
+    img_path = IMG_TEST_DIR / 'does_not_exist.jpg'
     with pytest.raises(ValueError):
         CardExtractor.from_file(str(img_path))

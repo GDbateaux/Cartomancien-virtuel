@@ -2,3 +2,7 @@ __pycache__/
 .venv/
 .env
 .coverage
+*.onnx
+*.onnx.json
+*.bin
+*.sqlite3

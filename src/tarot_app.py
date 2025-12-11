@@ -5,18 +5,21 @@ import threading
 from card_recognizer import CardRecognizer
 from card_extractor import CardExtractor
 from tarot_reader import TarotReader
-from tts import speak
+from tts import TTS
 
 
 class TarotApp:
-    # The user flow logic and the refactoring into the TarotApp class were designed and refined with help from ChatGPT 
-    def __init__(self, ref_dir, stable_seconds = 1.0, num_cards = 3, time_under_three_cards = 1.0):
+    """
+    Note: The user flow logic and the refactoring into the TarotApp class were designed and refined with help from ChatGPT 
+    """
+    def __init__(self, ref_dir, stable_seconds = 1.0, num_cards = 3, time_under_three_cards = 1.0, model_name_tts='fr_FR-tom-medium.onnx'):
         self.STABLE_SECONDS = stable_seconds
         self.NUM_CARDS = num_cards
         self.TIME_UNDER_THREE_CARDS = time_under_three_cards
 
         self.card_recognizer = CardRecognizer(ref_dir)
         self.tarot_reader = TarotReader()
+        self.tts = TTS(model_name=model_name_tts)
 
         self.speaking_finish = True
         self.last_time = time.time()
@@ -46,7 +49,7 @@ class TarotApp:
 
             def worker(labels):
                 for sentence in self.tarot_reader.stream_predict(labels):
-                    speak(sentence)
+                    self.tts.speak(sentence)
                 self.speaking_finish = True
                 self.reading_done = True
 
@@ -74,7 +77,7 @@ class TarotApp:
             print('Cannot open camera')
             return
 
-        speak('Bonjour. Tirez trois cartes de tarot et placez-les devant la caméra.')
+        self.tts.speak('Bonjour. Tirez trois cartes de tarot et placez-les devant la caméra.')
 
         while True:
             ret, frame = cap.read()

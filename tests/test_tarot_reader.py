@@ -9,25 +9,19 @@ from src.tarot_reader import TarotReader
 def test_stream_time_prediction():
     tarot_reader = TarotReader()
     cards = ['le diable', "l'homme pendu", 'la mort']
+    num_runs = 10
+    total_time = 0.0
 
-    t1 = time.time()
-    gen = tarot_reader.stream_predict(cards)
+    for _ in range(num_runs):
+        t1 = time.time()
+        gen = tarot_reader.stream_predict(cards)
 
-    first_sentence = next(gen)
-    dt = time.time() - t1
-
-    print(f"\nTime to first sentence: {dt} seconds\n")
-    assert dt <= 10
+        first_sentence = next(gen)
+        total_time += time.time() - t1
+    mean_time = total_time / num_runs
+    print(f"\nTime to first sentence: {mean_time} seconds\n")
+    assert mean_time <= 5
     assert any(c in first_sentence for c in ".:?!")
-
-""" def test_time_prediction():
-    tarot_reader = TarotReader()
-    cards = ['le diable', "l'homme pendu", 'la mort']
-
-    t1 = time.time()
-    tarot_reader.predict(cards)
-    prediction_time = time.time() - t1
-    assert prediction_time <= 3 """
 
 def test_predict_calls_chat(monkeypatch):
     calls_content = {}
