@@ -128,4 +128,16 @@ The RAG and question-answering components of this project were inspired by:
 
 - The official ChromaDB documentation: https://docs.trychroma.com
 
+The SST section was inspired by:
+
+- https://medium.com/@nimritakoul01/offline-speech-to-text-in-python-f5d6454ecd02
+
+- https://stackoverflow.com/questions/3262346/how-to-pause-and-resume-a-thread-using-the-threading-module 
+
+- https://stackoverflow.com/questions/79253154/use-vosk-speech-recognition-with-python?utm_source=chatgpt.com
+
+- https://stackoverflow.com/questions/10525185/python-threading-how-do-i-lock-a-thread
+
+- https://stackoverflow.com/questions/24072790/how-to-detect-key-presses
+
 The texts in data/tarot_data are extracted from Wikipedia (CC BY-SA 4.0 license).

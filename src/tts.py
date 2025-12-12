@@ -18,7 +18,6 @@ class TTS():
             noise_w_scale=0.3,
         )
 
-
     def speak(self, text):
         # This code is inspired by https://noerguerra.com/how-to-read-text-aloud-with-piper-and-python/https://noerguerra.com/how-to-read-text-aloud-with-piper-and-python/
         stream = sd.OutputStream(samplerate=self.voice.config.sample_rate, channels=1, dtype='int16')
