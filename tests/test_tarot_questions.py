@@ -15,7 +15,7 @@ def test_tarot_but_unknown_returns():
 def test_tarot_answerable():
     response = tarot_rag.answer('Combien y a-t-il de cartes dans un jeu de tarot ?')
     assert response not in [
-        "Je ne peux pas répondre : cette question ne concerne pas le tarot.",
+        'Je ne peux pas répondre : cette question ne concerne pas le tarot.',
         "Je ne peux pas répondre de façon fiable : je n'ai pas assez d'informations."
     ]
     assert '(' not in response and ')' not in response

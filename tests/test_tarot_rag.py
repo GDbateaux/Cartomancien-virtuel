@@ -3,7 +3,6 @@ from src.tarot_rag import TarotRag
 
 tarot_rag = TarotRag()
 
-
 def test_load_chunks():
     chunks = tarot_rag._load_chunks()
     assert tarot_rag.collection.count() == len(chunks)
