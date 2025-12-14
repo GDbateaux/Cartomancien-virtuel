@@ -21,33 +21,30 @@ To run this project, you need:
 - **Card recognition** powered by a ResNet18 embedding system.
 - **Local tarot interpretation** generated offline using a SLM through Ollama.
 - **RAG-powered question answering** enabling responses about tarot structure, history, and symbolism.
-- **Natural French text-to-speech** via Piper.
+- **French text-to-speech** via Piper.
+- **French speech-to-text (STT)** for push-to-talk questions via Vosk.
 - **Automated project setup** with cross-platform scripts that install dependencies, pull LLM models, and download TTS voices.
 - **Test suite**, covering card extraction, card recognition, LLM response timing, and the tarot reading pipeline.
 
-## Installation (Automatic)
-### Linux / macOS
-From the project root:
+## Documentation
+- **User Guide:** see [`USER_GUIDE.md`](USER_GUIDE.md)
+- **Developer Guide:** see [`DEVELOPER_GUIDE.md`](DEVELOPER_GUIDE.md)
 
+
+## Installation
+
+### Installation via Windows Release
+1. Download the latest Windows `.zip` from the GitHub **Releases** page.
+2. Extract the archive.
+3. Install Ollama and download the required model:
 ```bash
-./scripts/setup_project.sh
+ollama pull llama3.2:3b
 ```
+4. Run CartomancienVirtuel.exe.
 
-### Windows
-From the project root, in a terminal (cmd):
-```bat
-scripts\setup_project.bat
-```
+This application is fully local, but it still requires Ollama to run the language model.
 
-These scripts:
-
-- install Python dependencies with uv
-
-- pull the Ollama model llama3.2:3b
-
-- download the Piper French voice model fr_FR-tom-medium into data/voices
-
-## Installation (Manual)
+### Installation (Manual)
 From the project root:
 
 ```bash
@@ -72,7 +69,7 @@ uv run python -m piper.download_voices fr_FR-siwis-medium
 
 ## Run
 From the project root:
-```
+```bash
 uv run python -m src.main
 ```
 
@@ -106,38 +103,32 @@ To contribute:
 ## Sources
 This project relies in particular on:
 
-- The official OpenCV documentation: https://docs.opencv.org  
-- The official Pytorch documentation: https://docs.pytorch.org/docs/stable/index.html
-- The official Ollama documentation: https://docs.ollama.com/
-- The pytest documentation: https://docs.pytest.org/en/stable/contents.html
-- The piper documentation: https://github.com/OHF-Voice/piper1-gpl/blob/main/README.md
-- The chroma documentation: https://docs.trychroma.com/docs
-- Assistance from ChatGPT (OpenAI) for design discussions, code structure suggestions, documentation writing, and help debugging errors.
+- [The OpenCV documentation](https://docs.opencv.org/4.x/)
+- [The Pytorch documentation](https://docs.pytorch.org/docs/stable/index.html)
+- [The Ollama documentation](https://docs.ollama.com/)
+- [The pytest documentation](https://docs.pytest.org/en/stable/contents.html)
+- [The piper documentation](https://github.com/OHF-Voice/piper1-gpl/blob/main/README.md)
+- [The chroma documentation](https://docs.trychroma.com/docs)
+- [The pyinstaller documentation](https://pyinstaller.org/en/stable/)
+- Assistance from [ChatGPT](https://chatgpt.com/) for design discussions, code structure suggestions, documentation writing, and help debugging errors.
 
 The image embedding and similarity approach used in this project was inspired by:
 
-- Tayyib Ul Hassan Gondal, *Image Embeddings for Enhanced Image Search*, The Deep Hub (Medium).  
-  https://medium.com/thedeephub/image-embeddings-for-enhanced-image-search-f35608752d42  
-
-- PyTorch Hub, *ResNet: Deep Residual Learning for Image Recognition*.  
-  https://pytorch.org/hub/pytorch_vision_resnet/
+- [Image Embeddings for Enhanced Image Search]( 
+  https://medium.com/thedeephub/image-embeddings-for-enhanced-image-search-f35608752d42)
+- [PyTorch Hub, *ResNet: Deep Residual Learning for Image Recognition*.]( 
+  https://pytorch.org/hub/pytorch_vision_resnet/)
 
 The RAG and question-answering components of this project were inspired by:
 
-- The tutorial “RAG + ChromaDB + Ollama: Python Guide for Beginners”: https://medium.com/@arunpatidar26/rag-chromadb-ollama-python-guide-for-beginners-30857499d0a0
-
-- The official ChromaDB documentation: https://docs.trychroma.com
+- [How to Implement RAG with ChromaDB and Ollama: A Python Guide for Beginners](https://medium.com/@arunpatidar26/rag-chromadb-ollama-python-guide-for-beginners-30857499d0a0)
 
 The SST section was inspired by:
 
-- https://medium.com/@nimritakoul01/offline-speech-to-text-in-python-f5d6454ecd02
-
-- https://stackoverflow.com/questions/3262346/how-to-pause-and-resume-a-thread-using-the-threading-module 
-
-- https://stackoverflow.com/questions/79253154/use-vosk-speech-recognition-with-python?utm_source=chatgpt.com
-
-- https://stackoverflow.com/questions/10525185/python-threading-how-do-i-lock-a-thread
-
-- https://stackoverflow.com/questions/24072790/how-to-detect-key-presses
+- [Offline Speech to Text in Python](https://medium.com/@nimritakoul01/offline-speech-to-text-in-python-f5d6454ecd02)
+- [How to pause and resume a thread using the threading module?](https://stackoverflow.com/questions/3262346/how-to-pause-and-resume-a-thread-using-the-threading-module)
+- [Use Vosk speech recognition with Python](https://stackoverflow.com/questions/79253154/use-vosk-speech-recognition-with-python?utm_source=chatgpt.com)
+- [Python threading. How do I lock a thread?](https://stackoverflow.com/questions/10525185/python-threading-how-do-i-lock-a-thread)
+- [Python threading. How do I lock a thread?](https://stackoverflow.com/questions/24072790/how-to-detect-key-presses)
 
 The texts in data/tarot_data are extracted from Wikipedia (CC BY-SA 4.0 license).

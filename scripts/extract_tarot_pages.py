@@ -14,7 +14,7 @@ for page_title in page_titles:
     if not page.exists():
         print(f'Page not found: {page_title}')
         continue
-    
+
     text = page.text
     txt_name = page_title + '.txt'
     file_path = txt_directory / txt_name

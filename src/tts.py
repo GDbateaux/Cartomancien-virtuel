@@ -1,13 +1,14 @@
 import numpy as np
 import sounddevice as sd
 
-from pathlib import Path
 from piper import PiperVoice, SynthesisConfig
+
+from src.utils import project_root
 
 
 class TTS():
     def __init__(self, model_name='fr_FR-tom-medium.onnx'):
-        model_path = Path(__file__).parent.parent / 'data' / 'voices' / model_name
+        model_path = project_root() / 'data' / 'voices' / model_name
         if not model_path.is_file():
             raise FileNotFoundError(f"Voice model '{model_name}' not found at '{model_path}'. ")
         

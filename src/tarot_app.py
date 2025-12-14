@@ -3,12 +3,12 @@ import time
 import keyboard
 import threading
 
-from card_recognizer import CardRecognizer
-from tarot_questions import TarotQuestions
-from card_extractor import CardExtractor
-from tarot_reader import TarotReader
-from stt import STT
-from tts import TTS
+from src.card_recognizer import CardRecognizer
+from src.tarot_questions import TarotQuestions
+from src.card_extractor import CardExtractor
+from src.tarot_reader import TarotReader
+from src.stt import STT
+from src.tts import TTS
 
 
 class TarotApp:
@@ -110,6 +110,9 @@ class TarotApp:
 
         if not cap.isOpened():
             print('Cannot open camera')
+            cap.release()
+            cv2.destroyAllWindows()
+            self.stt.close()
             return
 
         self.tts.speak('Bonjour. Tirez trois cartes de tarot et placez-les devant la caméra.')
@@ -128,3 +131,4 @@ class TarotApp:
 
         cap.release()
         cv2.destroyAllWindows()
+        self.stt.close()

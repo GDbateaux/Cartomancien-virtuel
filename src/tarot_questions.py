@@ -1,8 +1,9 @@
 import textwrap
 
-from tarot_rag import TarotRag
-
 from ollama import chat
+
+from src.tarot_rag import TarotRag
+
 
 
 class TarotQuestions:

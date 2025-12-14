@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-from card import Card
+from src.card import Card
 
 
 class CardExtractor:

@@ -6,3 +6,7 @@ __pycache__/
 *.onnx.json
 *.bin
 *.sqlite3
+build/
+dist/
+data/vosk
+*.spec

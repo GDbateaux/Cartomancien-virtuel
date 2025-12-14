@@ -4,10 +4,18 @@ import pyaudio
 import keyboard
 import threading
 
+from src.utils import project_root
+
 
 class STT:
     def __init__(self, model_name='vosk-model-fr-0.22'):
-        model = vosk.Model(model_name=model_name)
+        model_dir = project_root() / 'data' / 'vosk' / model_name
+
+        if not model_dir.exists():
+            model = vosk.Model(model_name=model_name)
+        else:
+            model = vosk.Model(str(model_dir))
+        
         rate = 16000
         self.rec = vosk.KaldiRecognizer(model, rate)
 
@@ -37,7 +45,7 @@ class STT:
                     result = json.loads(self.rec.Result())
                     txt = result['text']
                     if txt:
-                        self.text += " " + txt
+                        self.text += ' ' + txt
 
     def listen(self):
         if not self.event.is_set():

@@ -1,18 +1,17 @@
 import chromadb
 
-from pathlib import Path
-
 from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
 
+from src.utils import project_root
 
 class TarotRag:
     def __init__(self, rebuild_index = True):
         self.embedding_fn = SentenceTransformerEmbeddingFunction(
             model_name='sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2'
         )
-        self.DATA_DIR = Path(__file__).parent.parent / 'data' / 'tarot_data'
+        self.DATA_DIR = project_root() / 'data' / 'tarot_data'
 
-        self.CHROMA_DIR = Path(__file__).parent.parent / 'data' / 'chroma_tarot'
+        self.CHROMA_DIR = project_root() / 'data' / 'chroma_tarot'
         self.CHROMA_DIR.mkdir(parents=True, exist_ok=True)
         
         self.chroma_client = chromadb.PersistentClient(path=self.CHROMA_DIR)
