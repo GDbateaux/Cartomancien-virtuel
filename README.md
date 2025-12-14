@@ -1,5 +1,5 @@
-<p align="center">
-  <img src="assets/logo.png" width="400" alt="Cartomancien Virtuel Logo"><br>
+<p align='center'>
+  <img src='assets/logo.png' width='400' alt='Cartomancien Virtuel Logo'><br>
   <sub>Logo generated with DALL·E (OpenAI).</sub>
 </p>
 
@@ -14,6 +14,16 @@ To run this project, you need:
 - [Python](https://www.python.org/) installed on your system
 - [uv](https://docs.astral.sh/uv/) installed (Python package and environment manager)
 - [Ollama](https://ollama.com/) installed (for running the local LLM)
+
+## How it works
+
+<p align='center'>
+  <img src='assets/workflow.png' width='900' alt='Workflow: camera/cards input, push-to-talk questions, spoken answers'>
+</p>
+
+Two main flows:
+- **Card reading:** camera → card detection/recognition → local LLM (Ollama) → spoken reading (Piper).
+- **Push-to-talk Q&A:** microphone (Vosk STT) → RAG retrieval (ChromaDB) → local LLM (Ollama) → spoken answer (Piper).
 
 ## Highlights
 
