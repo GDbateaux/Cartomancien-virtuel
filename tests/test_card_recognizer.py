@@ -8,7 +8,7 @@ from src.card_recognizer import CardRecognizer
 
 DATA_DIR = Path(__file__).parent.parent / 'data'
 IMG_TEST_DIR = DATA_DIR / 'img_test'
-card_recognizer = CardRecognizer(DATA_DIR / 'cards')
+card_recognizer = CardRecognizer(DATA_DIR / 'cards_test')
 
 #TODO Repair
 @pytest.mark.parametrize(
