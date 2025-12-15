@@ -1,0 +1,6 @@
+Voici des extraits de textes de référence sur le tarot :
+            
+{context}
+
+Question :
+{question}

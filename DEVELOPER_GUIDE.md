@@ -12,7 +12,7 @@ The application has two main user flows:
 
 3) Card recognition (CardRecognizer) uses ResNet18 embeddings to shortlist the closest reference cards in data/cards/, then applies SIFT feature matching to rerank candidates and select the final label.
 
-4) When exactly 3 cards are confidently recognized and stable for a configured duration, the app calls Tarot reading generation (TarotReader, via Ollama chat API)
+4) When exactly 3 cards are confidently recognized and stable for a configured duration, the app calls Tarot reading generation (TarotReader, via Ollama chat API).
 
 5) The reading is spoken aloud via Piper TTS (TTS).
 
@@ -43,15 +43,17 @@ Cartomancien-virtuel/
 ├─ assets/                 # Logo and documentation images
 ├─ data/                   # Runtime assets (used by the app)
 │  ├─ cards/               # Reference card images (labels = filenames without extension)
-│  ├─ img_test/            # Test images used by the CV pipeline tests
-│  ├─ tarot_data/          # RAG knowledge base (.txt files)
+│  ├─ cards_test/          # Test images used by the CV pipeline tests
 │  ├─ chroma_tarot/        # Persistent ChromaDB index
+│  ├─ prompts/             # User-editable prompt templates (system/user)
+│  ├─ tarot_data/          # RAG knowledge base (.txt files)
 │  ├─ voices/              # Piper voice models (.onnx)
+│  ├─ settings.json        # User-editable app settings (e.g., camera_index)
 ├─ scripts/                # Tarot wikipedia page extraction
 ├─ src/                    # Python source code
 ├─ tests/                  # Pytest test suite
 ├─ .coveragerc             # Coverage configuration
-├─ .gitignore             # Git ignore rules
+├─ .gitignore              # Git ignore rules
 ├─ .python-version         # Python version
 ├─ DEVELOPER_GUIDE.md      # Developer guide (architecture / tests / style)
 ├─ pyproject.toml          # Project config + dependencies
@@ -107,6 +109,8 @@ Cartomancien-virtuel/
 
 - `src/utils.py`
     - project_root() for supporting both normal execution and PyInstaller “frozen” execution (sys._MEIPASS).
+    - load_settings() loads data/settings.json.
+    - load_prompt() loads prompt templates from data/prompts/.
 
 ## Tests
 ### Running tests

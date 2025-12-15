@@ -3,6 +3,8 @@ import re
 
 from ollama import chat
 
+from src.utils import load_prompt, project_root, Default
+
 
 class TarotReader:
     """
@@ -13,7 +15,10 @@ class TarotReader:
     """
     def __init__(self, model_name: str = 'llama3.2:3b'): 
         self.model_name = model_name
-        self.SYSTEM_PROMPT = textwrap.dedent("""
+
+        self.user_prompt_path = project_root() / 'data' / 'prompts' / 'reading_user.txt'
+        system_prompt_path = project_root() / 'data' / 'prompts' / 'reading_system.txt'
+        self.SYSTEM_PROMPT = load_prompt(system_prompt_path, textwrap.dedent("""
             Tu es un cartomancien expérimenté. Tu interprètes des tirages de tarot et
             tu réponds en français, avec un ton bienveillant et clair.
 
@@ -27,7 +32,7 @@ class TarotReader:
 
             Ne mentionne jamais l'informatique, le code, JSON ou le fait que tu es un modèle.
             Parle comme un humain.
-        """).strip()
+        """))
         self.predict(['fake card'])  # Warm-up the model
 
     def _build_prompt(self, cards: list[str]):
@@ -35,7 +40,7 @@ class TarotReader:
         for card in cards:
             cards_desc += f'- {card}\n'
 
-        return textwrap.dedent(f"""
+        prompt = load_prompt(self.user_prompt_path, textwrap.dedent("""
             Voici le tirage (de gauche à droite) :
 
             {cards_desc}
@@ -49,7 +54,11 @@ class TarotReader:
 
             N'utilise ni listes, ni titres, ni mise en forme spéciale.
             Ne renvoie que le texte de la lecture.
-        """).strip()
+        """), ['cards_desc'])
+
+        # Code inspired by https://stackoverflow.com/questions/3536303/python-string-format-suppress-silent-keyerror-indexerror
+        d = Default({'cards_desc': cards_desc})
+        return prompt.format_map(d)
 
     def predict(self, cards: list[str]):
         prompt = self._build_prompt(cards)
@@ -83,7 +92,7 @@ class TarotReader:
         yield sentence
 
 if __name__ == '__main__':
-    from tts import TTS
+    from src.tts import TTS
 
     reader = TarotReader()
     tts = TTS()

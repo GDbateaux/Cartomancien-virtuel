@@ -54,6 +54,16 @@ uv run python -m src.main
 ```
 
 A window should open showing the camera feed.
+### Settings (camera index)
+You can select which camera OpenCV uses by editing:
+
+- `data/settings.json`
+
+Example:
+```json
+{ "camera_index": 1 }
+```
+If the file is missing or invalid, the app falls back to the default camera (index 0).
 
 ## How to use
 ### Tarot reading (3-card spread)
@@ -71,12 +81,12 @@ A window should open showing the camera feed.
 ### Ask a question (push-to-talk)
 1) Press and hold `o` to start recording your question (STT).
 2) Wait a brief moment before speaking, then ask your question clearly.
-3) When you’re done, wait a brief moment before releasing o to make sure the last words are captured.
-4) Release o to stop recording and submit the question.
+3) When you’re done, wait a brief moment before releasing `o` to make sure the last words are captured.
+4) Release `o` to stop recording and submit the question.
 5) The assistant answers using the RAG system (tarot-only constraints) and speaks the reply.
 
 ### Quit
-Press q while the camera window is focused.
+Press `q` while the camera window is focused.
 
 ## Customizing the card set (reference images)
 - The card recognition step uses the reference images stored in: data/cards/
@@ -88,23 +98,33 @@ Press q while the camera window is focused.
 - Your source text chunks are loaded from: data/tarot_data/*.txt
 - To change what the RAG can answer, you can add, remove, or edit the .txt files in data/tarot_data/ (then rebuild the index if needed).
 
+## Prompt customization
+
+You can customize the assistant behavior by editing the prompt text files in `data/prompts/`
+
+Files:
+
+- `questions_system.txt` — system rules for tarot Q&A (RAG).
+- `questions_user.txt` — user prompt template for Q&A (must keep {context} and {question}).
+- `reading_system.txt` — system rules for the 3-card tarot reading generation.
+- `reading_user.txt` — user prompt template for the 3-card reading (must keep {cards_desc}).
+
 ## Basic troubleshooting
 ### Camera window opens but shows nothing / “Cannot open camera”
 - Make sure no other app is using the webcam.
-- Try another camera index in src/main.py, e.g. tarot_app.run(1) instead of run(0).
+- Try another camera index by editing `data/settings.json` (e.g. set "camera_index": 1, then restart the app).
 
 ### Cards are not detected (no outlines) or detection is unstable
 - Improve lighting and reduce reflections.
 - Move the camera slightly farther away so the full cards are visible.
 - Use a high-contrast background.
-- If needed, adjust preprocessing in CardExtractor._preprocess() (threshold block size, morphology kernel, etc.).
+- If you run the project from source, adjust preprocessing in CardExtractor._preprocess() (threshold block size, morphology kernel, etc.).
 
 ### Card recognition is wrong or often fails
-- The recognizer applies a similarity threshold (min_score=0.75). If it is too strict for your lighting/camera quality, lower it slightly (for example to 0.70) in TarotApp._process_frame():
+- If you run the project from source and recognition is too strict, lower the embedding shortlist threshold min_score slightly (e.g. 0.70) in TarotApp._process_frame(). This affects which candidates are sent to SIFT for reranking:
 ```python
 self.card_recognizer.recognize(card.image, min_score=0.75)
 ```
-
 - Ensure reference images in data/cards/ match your real cards (style, edition, borders).
 - Make sure extracted cards are upright/clean: reflections and blur reduce embedding quality.
 
@@ -113,7 +133,7 @@ If the spoken answer says it doesn’t have enough information, it usually means
 
 - Check that data/tarot_data/ contains relevant .txt files with the information you expect.
 - Check that the Chroma index exists and was built successfully in data/chroma_tarot/.
-- Try retrieving more context by increasing n_results in TarotQuestions(..., n_results=4) to 6 or 8.
+- If you run the project from source, try retrieving more context by increasing n_results in TarotQuestions(..., n_results=4) to 6 or 8.
 
 ### Ollama errors (model not found / connection refused)
 - Check Ollama is installed and running:
@@ -134,7 +154,9 @@ ollama pull llama3.2:3b
 
 ## Folder layout (important paths)
 - `data/cards/` — reference card images for recognition
-- `data/tarot_data/` — tarot text files used by RAG
 - `data/chroma_tarot/` — persistent ChromaDB index
+- `data/prompts/` — editable prompt templates (system/user prompts)
+- `data/tarot_data/` — tarot text files used by RAG
 - `data/voices/` — Piper voice models
 - `data/vosk/` — Vosk STT model folders
+- `data/settings.json` — user-editable app settings (e.g., camera_index)

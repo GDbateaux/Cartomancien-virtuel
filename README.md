@@ -35,11 +35,11 @@ Two main flows:
 - **French speech-to-text (STT)** for push-to-talk questions via Vosk.
 - **Automated project setup** with cross-platform scripts that install dependencies, pull LLM models, and download TTS voices.
 - **Test suite**, covering card extraction, card recognition, LLM response timing, and the tarot reading pipeline.
+- **User-configurable prompts & settings** via editable files in data/prompts/ and data/settings.json
 
 ## Documentation
 - **User Guide:** see [`USER_GUIDE.md`](USER_GUIDE.md)
 - **Developer Guide:** see [`DEVELOPER_GUIDE.md`](DEVELOPER_GUIDE.md)
-
 
 ## Installation
 
@@ -53,6 +53,8 @@ ollama pull llama3.2:3b
 4. Run CartomancienVirtuel.exe.
 
 This application is fully local, but it still requires Ollama to run the language model.
+
+Optional: change the default camera in data/settings.json and adjust prompts in data/prompts/.
 
 ### Installation (Manual)
 From the project root:

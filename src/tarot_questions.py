@@ -3,7 +3,7 @@ import textwrap
 from ollama import chat
 
 from src.tarot_rag import TarotRag
-
+from src.utils import load_prompt, project_root, Default
 
 
 class TarotQuestions:
@@ -16,7 +16,9 @@ class TarotQuestions:
         self.n_results = n_results
         self.tarot_rag = TarotRag()
 
-        self.SYSTEM_PROMPT = textwrap.dedent("""
+        self.user_prompt_path = project_root() / 'data' / 'prompts' / 'questions_user.txt'
+        system_prompt_path = project_root() / 'data' / 'prompts' / 'questions_system.txt'
+        self.SYSTEM_PROMPT = load_prompt(system_prompt_path, textwrap.dedent("""
             Tu es un assistant expert du tarot.
 
             Règle d'utilisation :
@@ -35,7 +37,7 @@ class TarotQuestions:
             - N'écris jamais de parenthèses, ni ouvrantes ni fermantes.
             - Utilise uniquement des chiffres arabes 0-9, jamais de chiffres romains.
             - Ne mentionne jamais des extraits, textes, documents, sources, contexte, base de connaissances.
-        """).strip()
+        """))
 
     def _build_prompt(self, question):
         retrieved_docs = self.tarot_rag.query_chroma(question, self.n_results)['documents']
@@ -44,15 +46,18 @@ class TarotQuestions:
         else:
             context = "Aucun contexte pertinent n'a pu être trouvé dans la base de connaissances sur le tarot."
 
-
-        return textwrap.dedent(f"""
+        prompt = load_prompt(self.user_prompt_path, textwrap.dedent("""
             Voici des extraits de textes de référence sur le tarot :
             
             {context}
 
             Question :
             {question}
-        """).strip()
+        """), ['context', 'question'])
+
+        # Code inspired by https://stackoverflow.com/questions/3536303/python-string-format-suppress-silent-keyerror-indexerror
+        d = Default({'context': context, 'question': question})
+        return prompt.format_map(d)
     
     def answer(self, question):
         prompt = self._build_prompt(question)
@@ -67,4 +72,4 @@ class TarotQuestions:
 if __name__ == '__main__':
     tarot_questions = TarotQuestions()
     print(tarot_questions.answer('Combien il y a de cartes de tarot dans un jeu?'))
-    print(tarot_questions.answer('Combien de pates a une araignée?'))
+    print(tarot_questions.answer('Combien de pattes a une araignée?'))
