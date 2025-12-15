@@ -28,7 +28,7 @@ Two main flows:
 ## Highlights
 
 - **Card detection** using a custom OpenCV pipeline with contour filtering and perspective correction.
-- **Card recognition** powered by a ResNet18 embedding system.
+- **Card recognition** powered by ResNet18 embeddings and SIFT feature matching.
 - **Local tarot interpretation** generated offline using a SLM through Ollama.
 - **RAG-powered question answering** enabling responses about tarot structure, history, and symbolism.
 - **French text-to-speech** via Piper.
@@ -128,17 +128,19 @@ The image embedding and similarity approach used in this project was inspired by
   https://medium.com/thedeephub/image-embeddings-for-enhanced-image-search-f35608752d42)
 - [PyTorch Hub, *ResNet: Deep Residual Learning for Image Recognition*.]( 
   https://pytorch.org/hub/pytorch_vision_resnet/)
+- [OpenCV Feature Matching](https://docs.opencv.org/4.x/dc/dc3/tutorial_py_matcher.html)
+- [Sift comparison, calculate similarity score, python](https://stackoverflow.com/questions/50217364/sift-comparison-calculate-similarity-score-python)
 
 The RAG and question-answering components of this project were inspired by:
 
 - [How to Implement RAG with ChromaDB and Ollama: A Python Guide for Beginners](https://medium.com/@arunpatidar26/rag-chromadb-ollama-python-guide-for-beginners-30857499d0a0)
 
-The SST section was inspired by:
+The STT section was inspired by:
 
 - [Offline Speech to Text in Python](https://medium.com/@nimritakoul01/offline-speech-to-text-in-python-f5d6454ecd02)
 - [How to pause and resume a thread using the threading module?](https://stackoverflow.com/questions/3262346/how-to-pause-and-resume-a-thread-using-the-threading-module)
 - [Use Vosk speech recognition with Python](https://stackoverflow.com/questions/79253154/use-vosk-speech-recognition-with-python?utm_source=chatgpt.com)
 - [Python threading. How do I lock a thread?](https://stackoverflow.com/questions/10525185/python-threading-how-do-i-lock-a-thread)
-- [Python threading. How do I lock a thread?](https://stackoverflow.com/questions/24072790/how-to-detect-key-presses)
+- [How to detect key presses?](https://stackoverflow.com/questions/24072790/how-to-detect-key-presses)
 
 The texts in data/tarot_data are extracted from Wikipedia (CC BY-SA 4.0 license).

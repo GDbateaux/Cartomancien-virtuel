@@ -10,7 +10,7 @@ The application has two main user flows:
 
 2) Card extraction (CardExtractor) detects rectangular card contours and applies perspective correction to produce normalized card images.
 
-3) Card recognition (CardRecognizer) embeds each extracted card image with a ResNet18 feature extractor and matches against reference embeddings (data/cards/) using cosine similarity.
+3) Card recognition (CardRecognizer) uses ResNet18 embeddings to shortlist the closest reference cards in data/cards/, then applies SIFT feature matching to rerank candidates and select the final label.
 
 4) When exactly 3 cards are confidently recognized and stable for a configured duration, the app calls Tarot reading generation (TarotReader, via Ollama chat API)
 
@@ -51,7 +51,7 @@ Cartomancien-virtuel/
 ├─ src/                    # Python source code
 ├─ tests/                  # Pytest test suite
 ├─ .coveragerc             # Coverage configuration
-├─  .gitignore             # Git ignore rules
+├─ .gitignore             # Git ignore rules
 ├─ .python-version         # Python version
 ├─ DEVELOPER_GUIDE.md      # Developer guide (architecture / tests / style)
 ├─ pyproject.toml          # Project config + dependencies
@@ -72,8 +72,13 @@ Cartomancien-virtuel/
 
 - `src/card_recognizer.py`
     - Loads a pretrained ResNet18 backbone and turns it into an embedding extractor (removes final classifier).
-    - Computes normalized embeddings for all reference images in data/cards/.
-    - For each candidate card image, returns the top matches with similarity scores.
+    - Builds a reference index from data/cards/:
+        - normalized embeddings for fast candidate retrieval,
+        - SIFT keypoints/descriptors for feature matching.
+    - For each extracted card image:
+        - selects a shortlist using embedding cosine similarity,
+        - reranks that shortlist using SIFT,
+        - returns the top matches with SIFT-based scores.
 
 - `src/card.py`
     - Defines the Card class, which stores the card bounding box, the extracted card image, and the predicted label/confidence.
@@ -128,7 +133,7 @@ Then open htmlcov/index.html in your browser to inspect the detailed coverage.
     - Validates number of extracted cards per test image and basic error cases.
 
 - `test_card_recognizer.py`
-    - Validates predicted labels on known test images and top_k / min_score behavior.
+    - Validates predicted labels on known test images and parameters behavior.
 
 - `test_pipeline_speed.py`
     - Measures average processing time per frame on test images.

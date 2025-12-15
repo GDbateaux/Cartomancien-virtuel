@@ -69,7 +69,7 @@ A window should open showing the camera feed.
 - Separate the cards with a gap so they don’t touch or overlap (avoid placing them too close together).
 
 ### Ask a question (push-to-talk)
-1) Press and hold o to start recording your question (STT).
+1) Press and hold `o` to start recording your question (STT).
 2) Wait a brief moment before speaking, then ask your question clearly.
 3) When you’re done, wait a brief moment before releasing o to make sure the last words are captured.
 4) Release o to stop recording and submit the question.
