@@ -8,9 +8,18 @@ from src.utils import load_prompt, project_root, Default
 
 class TarotQuestions:
     """
-    Note: The structure and wording of this prompt were refined with the help of
+    RAG-based Q&A module for tarot questions.
+
+    This class:
+    - Retrieves relevant snippets from the local tarot knowledge base (Chroma via TarotRag).
+    - Builds a user prompt that includes the retrieved context + the user's question.
+    - Queries a local Ollama model with strict instructions.
+    
+    Note: The structure and wording of the prompts were refined with the help of
     ChatGPT (OpenAI) to get clearer and more consistent readings.
     """
+
+    # Initialize the Q&A pipeline: retrieval settings, model name, and prompt templates.
     def __init__(self, model_name: str = 'llama3.2:3b', n_results = 4):
         self.model_name = model_name
         self.n_results = n_results
@@ -39,6 +48,7 @@ class TarotQuestions:
             - Ne mentionne jamais des extraits, textes, documents, sources, contexte, base de connaissances.
         """))
 
+    # Build the user prompt with retrieved context and the user's question.
     def _build_prompt(self, question):
         retrieved_docs = self.tarot_rag.query_chroma(question, self.n_results)['documents']
         if retrieved_docs:
@@ -59,6 +69,7 @@ class TarotQuestions:
         d = Default({'context': context, 'question': question})
         return prompt.format_map(d)
     
+    # Get an answer from the model for the given question.
     def answer(self, question):
         prompt = self._build_prompt(question)
 

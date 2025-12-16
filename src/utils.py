@@ -4,20 +4,24 @@ import json
 from pathlib import Path
 
 
+# Default configuration values used when no settings file is found or it is invalid.
 DEFAULT_SETTINGS = {
     'camera_index': 0
 }
 
+# Dict helper that prevents KeyError in str.format_map by leaving unknown placeholders untouched.
 # Code inspired by https://stackoverflow.com/questions/3536303/python-string-format-suppress-silent-keyerror-indexerror
 class Default(dict):
     def __missing__(self, key): 
         return key.join("{}")
-            
+
+# Return the project root directory, handling both normal and PyInstaller-frozen execution. 
 def project_root():
     if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
         return Path(sys._MEIPASS).parent
     return Path(__file__).parent.parent
 
+# Load a prompt from a file, or return the default prompt if the file is missing or invalid.
 def load_prompt(file_path: Path, default_prompt: str, parameters = None):
     try:
         if file_path.is_file():
@@ -28,6 +32,7 @@ def load_prompt(file_path: Path, default_prompt: str, parameters = None):
         pass
     return default_prompt.strip()
 
+# Load application settings from data/settings.json, falling back to defaults as needed.
 def load_settings():
     settings = project_root() / 'data' / 'settings.json'
 

@@ -13,8 +13,21 @@ from src.tts import TTS
 
 class TarotApp:
     """
+    Main application loop that ties together:
+    - Camera capture
+    - Card extraction (CardExtractor)
+    - Tarot reading generation (TarotReader) with text-to-speech (TTS)
+    - Push-to-talk questions (STT) answered by TarotQuestions (RAG)
+
+    User flow:
+    - Show 3 cards to the camera until the prediction is stable for STABLE_SECONDS.
+    - The app speaks the reading once, then waits until cards are removed to allow a new reading.
+    - Hold the 'o' key to ask a spoken question; release to get an answer spoken back.
+
     Note: The user flow logic and the refactoring into the TarotApp class were designed and refined with help from ChatGPT 
     """
+
+    # Initialize the app components and main timing/state parameters
     def __init__(self, ref_dir, stable_seconds = 1.0, num_cards = 3, time_under_three_cards = 1.0, model_name_tts='fr_FR-tom-medium.onnx', model_name_stt='vosk-model-fr-0.22'):
         self.STABLE_SECONDS = stable_seconds
         self.NUM_CARDS = num_cards
@@ -34,6 +47,7 @@ class TarotApp:
 
         self.audio_lock = threading.Lock()
 
+    # Process a single video frame: extract cards, recognize them, and handle reading logic.
     def _process_frame(self, frame):
         cards = CardExtractor(frame).get_cards()
         current_labels = []
@@ -78,6 +92,7 @@ class TarotApp:
                         self.under_three_since = None
         return frame
     
+    # Handle push-to-talk question on key release.
     def _on_release(self):
         question = self.stt.get_text()
         print(question)
@@ -98,10 +113,12 @@ class TarotApp:
 
         threading.Thread(target=worker, args=(question,)).start()
 
+    # Handle push-to-talk question on key press.
     def _on_press(self):
         if self.speaking_finish:
             self.stt.listen()
-        
+
+    # Main application loop: capture from camera, process frames, and handle exit.
     def run(self, camera_index = 0):
         keyboard.on_press_key('o', lambda _: self._on_press())
         keyboard.on_release_key('o', lambda _: self._on_release())

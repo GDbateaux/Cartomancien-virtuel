@@ -23,6 +23,18 @@ The SIFT part is inspired by:
 - https://stackoverflow.com/questions/50217364/sift-comparison-calculate-similarity-score-python
 """
 class CardRecognizer:
+    """
+    Recognizes a card image by comparing it to a reference dataset (ref_dir).
+
+    Workflow:
+    - Precompute one embedding + one SIFT descriptor set per reference image.
+    - For an input card image:
+        (A) compute embedding similarity against all references (fast)
+        (B) keep top-N candidates
+        (C) rerank using SIFT match score (more discriminative)
+    """
+
+    # Initialize the recognizer: load the embedding model, SIFT matcher, and precompute reference features.
     def __init__(self, ref_dir: Union[str, Path]):
         self.ref_dir: Path = Path(ref_dir)
 
@@ -43,6 +55,7 @@ class CardRecognizer:
         self.ref_embeddings = self._load_embeddings()
         self.ref_sift = self._load_sift_descriptors()
 
+    # Precompute embeddings for all reference images in ref_dir.
     def _load_embeddings(self):
         image_paths = sorted(
             list(self.ref_dir.glob('*.jpg')) +
@@ -56,7 +69,7 @@ class CardRecognizer:
             embeddings[img_path.stem] = emb
         return embeddings
 
-    # OpenCV image
+    # Compute the normalized embedding for a given image.
     def _img_to_embedding(self, img):
         img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         input_tensor = self.preprocess(img_rgb)
@@ -71,6 +84,7 @@ class CardRecognizer:
             emb = emb / n
         return emb
 
+    # Precompute SIFT descriptors for all reference images in ref_dir.
     def _load_sift_descriptors(self):
         image_paths = sorted(
             list(self.ref_dir.glob('*.jpg')) +
@@ -84,12 +98,14 @@ class CardRecognizer:
             descriptors[img_path.stem] = (kp, desc)
         return descriptors
     
+    # Compute SIFT keypoints and descriptors for a given image.
     def _img_to_sift(self, img):
         img = cv2.resize(img, self.img_size)
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         keypoints, descriptors = self.sift.detectAndCompute(gray,None)
         return keypoints, descriptors
 
+    # Compute the SIFT match score between two sets of keypoints/descriptors.
     def _sift_score(self, kp, desc, ref_kp, ref_desc, ratio=0.75):
         if desc is None or ref_desc is None:
             return 0
@@ -101,6 +117,7 @@ class CardRecognizer:
                 good.append([m])
         return len(good) * 100 / len(kp) if len(kp) > 0 else 0
     
+    # Recognize the input image and return top_k matches with their scores.
     def recognize(self, img, top_k: int = 1, min_score: float = None):
         img_flip = cv2.rotate(img, cv2.ROTATE_180)
         emb1 = self._img_to_embedding(img)

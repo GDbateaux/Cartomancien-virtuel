@@ -2,6 +2,7 @@ from src.tarot_app import TarotApp
 from src.utils import load_settings, project_root
 
 
+# Application entry point: initialize paths, create the TarotApp, load settings, and start the camera loop.
 if __name__ == '__main__':
     data_dir = project_root() / 'data'
     ref_dir = data_dir / 'cards'

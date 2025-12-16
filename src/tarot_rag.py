@@ -5,6 +5,18 @@ from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunct
 from src.utils import project_root
 
 class TarotRag:
+    """
+    RAG retrieval layer backed by ChromaDB.
+
+    What it does:
+    - Loads tarot reference text files from data/tarot_data/*.txt
+    - Splits them into paragraph-sized chunks
+    - Indexes the chunks into a Chroma collection using a multilingual
+      embedding model
+    - Provides a simple query method to retrieve the top-N most similar chunks
+    """
+
+    # Initialize Chroma and optionally rebuild the vector index from the text corpus.
     def __init__(self, rebuild_index = True):
         self.embedding_fn = SentenceTransformerEmbeddingFunction(
             model_name='sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2'
@@ -41,6 +53,7 @@ class TarotRag:
                 )
                 self._save_chunks_to_chroma()
 
+    # Load tarot documents and split them into paragraph chunks.
     def _load_chunks(self):
         chunks = []
 
@@ -51,6 +64,7 @@ class TarotRag:
                         chunks.append(paragraph.strip())
         return chunks
 
+    # Save the chunks into the Chroma collection.
     def _save_chunks_to_chroma(self):
         chunks = self._load_chunks()
 

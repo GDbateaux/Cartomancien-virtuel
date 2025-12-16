@@ -5,12 +5,23 @@ from src.card import Card
 
 
 class CardExtractor:
+    """
+    Extracts card candidates (rectangles) from a BGR image using OpenCV:
+    1) preprocessing (grayscale -> blur -> adaptive threshold -> morphology)
+    2) contour detection and quadrilateral selection
+    3) perspective correction to produce normalized card images
+
+    When debug=True, intermediate steps are displayed with cv2.imshow().
+    """
+
+    # Initialize the extractor with an BGR image.
     def __init__(self, img: np.ndarray, debug: bool = False):
         if img is None:
             raise ValueError('img must not be None')
         self.img = img
         self.debug = debug
 
+    # Build a CardExtractor directly from an image file path.
     @classmethod
     def from_file(cls, file_path: str, debug: bool = False):
         img = cv2.imread(file_path)
@@ -18,6 +29,7 @@ class CardExtractor:
             raise ValueError(f'Could not read image from {file_path}')
         return cls(img, debug=debug)
 
+    # Display an image in a window (for debugging).
     def _display(self, img, max_dim=1000):
         if not self.debug:
             return
@@ -32,6 +44,7 @@ class CardExtractor:
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
+    # Preprocess the image to create a binary mask for contour detection.
     def _preprocess(self):
         img_gray = cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY)
         self._display(img_gray)
@@ -46,6 +59,7 @@ class CardExtractor:
         self._display(mask)
         return mask
 
+    # Detect quadrilateral contour candidates that could correspond to cards.
     def _extract_boxes(self, mask):
         contours, hierarchy = cv2.findContours(
             mask.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
@@ -92,6 +106,7 @@ class CardExtractor:
         self._display(img_contours)
         return card_boxes
 
+    # Run the full pipeline and return the extracted cards (box + warped image).
     def get_cards(self) -> list[Card]:
         mask = self._preprocess()
         boxes = self._extract_boxes(mask)

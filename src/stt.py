@@ -8,6 +8,24 @@ from src.utils import project_root
 
 
 class STT:
+    """
+    Offline speech-to-text (STT) using Vosk.
+
+    This class opens the microphone, runs Vosk decoding in a background thread,
+    and lets you start/stop capture on demand.
+
+    How it works:
+    - A Vosk model is loaded from data/vosk/<model_name> when available, otherwise by name.
+    - The listener thread blocks on an Event and only reads audio while the Event is set.
+    - Recognized chunks are appended to an internal buffer and returned via get_text().
+
+    Main methods:
+    - listen(): start (or resume) recording/decoding
+    - get_text(): stop recording and return the transcript collected so far
+    - close(): shut everything down (thread + audio stream)
+    """
+
+    # Initialize the Vosk recognizer and the audio input stream, then start the listener thread.
     def __init__(self, model_name='vosk-model-fr-0.22'):
         model_dir = project_root() / 'data' / 'vosk' / model_name
 
@@ -32,7 +50,8 @@ class STT:
         self.event = threading.Event()
         self.t1 = threading.Thread(target=self._listen)
         self.t1.start()
-        
+
+    # Background loop: waits for the event, then reads audio and appends recognized text chunks.
     def _listen(self):
         while self.thread_up:
             self.event.wait()
@@ -47,10 +66,12 @@ class STT:
                     if txt:
                         self.text += ' ' + txt
 
+    # Start or resume listening/decoding.
     def listen(self):
         if not self.event.is_set():
             self.event.set()
 
+    # Stop listening and return the collected transcript.
     def get_text(self):
         self.event.clear()
 
@@ -64,6 +85,7 @@ class STT:
         self.text = ''
         return result
     
+    # Close the audio stream and stop the listener thread.
     def close(self):
         self.thread_up = False
         self.event.set()
