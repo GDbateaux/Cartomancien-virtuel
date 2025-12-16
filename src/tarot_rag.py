@@ -14,6 +14,9 @@ class TarotRag:
     - Indexes the chunks into a Chroma collection using a multilingual
       embedding model
     - Provides a simple query method to retrieve the top-N most similar chunks
+
+    Reference:
+    How to Implement RAG with ChromaDB and Ollama: A Python Guide for Beginners:https://medium.com/@arunpatidar26/rag-chromadb-ollama-python-guide-for-beginners-30857499d0a0
     """
 
     # Initialize Chroma and optionally rebuild the vector index from the text corpus.

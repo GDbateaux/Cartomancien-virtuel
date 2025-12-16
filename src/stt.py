@@ -23,6 +23,13 @@ class STT:
     - listen(): start (or resume) recording/decoding
     - get_text(): stop recording and return the transcript collected so far
     - close(): shut everything down (thread + audio stream)
+
+    References:
+    Offline Speech to Text in Python: https://medium.com/@nimritakoul01/offline-speech-to-text-in-python-f5d6454ecd02
+    How to pause and resume a thread using the threading module?: https://stackoverflow.com/questions/3262346/how-to-pause-and-resume-a-thread-using-the-threading-module
+    Use Vosk speech recognition with Python: https://stackoverflow.com/questions/79253154/use-vosk-speech-recognition-with-python?utm_source=chatgpt.com
+    Python threading. How do I lock a thread?: https://stackoverflow.com/questions/10525185/python-threading-how-do-i-lock-a-thread
+    How to detect key presses?: https://stackoverflow.com/questions/24072790/how-to-detect-key-presses
     """
 
     # Initialize the Vosk recognizer and the audio input stream, then start the listener thread.

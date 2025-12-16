@@ -33,7 +33,7 @@ class TTS():
 
     # Synthesize and play the given text out loud.
     def speak(self, text):
-        # This code is inspired by https://noerguerra.com/how-to-read-text-aloud-with-piper-and-python/https://noerguerra.com/how-to-read-text-aloud-with-piper-and-python/
+        # This code is inspired by https://noerguerra.com/how-to-read-text-aloud-with-piper-and-python/
         stream = sd.OutputStream(samplerate=self.voice.config.sample_rate, channels=1, dtype='int16')
         stream.start()
 
