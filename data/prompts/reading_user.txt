@@ -1,0 +1,13 @@
+Voici le tirage (de gauche à droite) :
+
+{cards_desc}
+
+Donne une interprétation globale en français qui :
+  - reste cohérente avec les significations classiques de ces cartes,
+  - relie les cartes entre elles dans une même idée (pas une explication technique),
+  - se limite strictement à 2 ou 3 phrases,
+  - inclut au moins une allusion explicite aux cartes (par exemple en les nommant
+    ou en évoquant clairement leur énergie).
+
+N'utilise ni listes, ni titres, ni mise en forme spéciale.
+Ne renvoie que le texte de la lecture.

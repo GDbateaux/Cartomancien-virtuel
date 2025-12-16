@@ -17,8 +17,24 @@ The embedding model and similarity approach are inspired by:
   https://medium.com/thedeephub/image-embeddings-for-enhanced-image-search-f35608752d42
 - PyTorch Hub ResNet example
   https://pytorch.org/hub/pytorch_vision_resnet/
+
+The SIFT part is inspired by:
+- https://docs.opencv.org/4.x/dc/dc3/tutorial_py_matcher.html
+- https://stackoverflow.com/questions/50217364/sift-comparison-calculate-similarity-score-python
 """
 class CardRecognizer:
+    """
+    Recognizes a card image by comparing it to a reference dataset (ref_dir).
+
+    Workflow:
+    - Precompute one embedding + one SIFT descriptor set per reference image.
+    - For an input card image:
+        (A) compute embedding similarity against all references (fast)
+        (B) keep top-N candidates
+        (C) rerank using SIFT match score (more discriminative)
+    """
+
+    # Initialize the recognizer: load the embedding model, SIFT matcher, and precompute reference features.
     def __init__(self, ref_dir: Union[str, Path]):
         self.ref_dir: Path = Path(ref_dir)
 
@@ -32,8 +48,14 @@ class CardRecognizer:
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
         ])
 
-        self.ref_embeddings = self._load_embeddings()
+        self.sift = cv2.SIFT_create(nfeatures=5000)
+        self.bf = cv2.BFMatcher()
+        self.img_size = (300, 600)
 
+        self.ref_embeddings = self._load_embeddings()
+        self.ref_sift = self._load_sift_descriptors()
+
+    # Precompute embeddings for all reference images in ref_dir.
     def _load_embeddings(self):
         image_paths = sorted(
             list(self.ref_dir.glob('*.jpg')) +
@@ -47,7 +69,7 @@ class CardRecognizer:
             embeddings[img_path.stem] = emb
         return embeddings
 
-    # OpenCV image
+    # Compute the normalized embedding for a given image.
     def _img_to_embedding(self, img):
         img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         input_tensor = self.preprocess(img_rgb)
@@ -61,21 +83,68 @@ class CardRecognizer:
         if n > 0:
             emb = emb / n
         return emb
+
+    # Precompute SIFT descriptors for all reference images in ref_dir.
+    def _load_sift_descriptors(self):
+        image_paths = sorted(
+            list(self.ref_dir.glob('*.jpg')) +
+            list(self.ref_dir.glob('*.png'))
+        )
+
+        descriptors = {}
+        for img_path in image_paths:
+            img = cv2.imread(str(img_path))
+            kp, desc = self._img_to_sift(img)
+            descriptors[img_path.stem] = (kp, desc)
+        return descriptors
     
+    # Compute SIFT keypoints and descriptors for a given image.
+    def _img_to_sift(self, img):
+        img = cv2.resize(img, self.img_size)
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        keypoints, descriptors = self.sift.detectAndCompute(gray,None)
+        return keypoints, descriptors
+
+    # Compute the SIFT match score between two sets of keypoints/descriptors.
+    def _sift_score(self, kp, desc, ref_kp, ref_desc, ratio=0.75):
+        if desc is None or ref_desc is None:
+            return 0
+        matches = self.bf.knnMatch(desc, ref_desc, k=2)
+
+        good = []
+        for m,n in matches:
+            if m.distance < ratio * n.distance:
+                good.append([m])
+        return len(good) * 100 / len(kp) if len(kp) > 0 else 0
+    
+    # Recognize the input image and return top_k matches with their scores.
     def recognize(self, img, top_k: int = 1, min_score: float = None):
         img_flip = cv2.rotate(img, cv2.ROTATE_180)
         emb1 = self._img_to_embedding(img)
         emb2 = self._img_to_embedding(img_flip)
         
-        scores = []
+        embed_scores = []
 
-        for k, v in self.ref_embeddings.items():
-            score1 = float(np.dot(emb1, v))
-            score2 = float(np.dot(emb2, v))
-            scores.append((k, max(score1, score2)))
-        scores.sort(key=lambda x: x[1], reverse=True)
+        for label, embed_ref in self.ref_embeddings.items():
+            score1 = float(np.dot(emb1, embed_ref))
+            score2 = float(np.dot(emb2, embed_ref))
+            embed_scores.append((label, max(score1, score2)))
+        embed_scores.sort(key=lambda x: x[1], reverse=True)
 
         if min_score is not None:
-            scores = [s for s in scores if s[1] >= min_score]
+            embed_scores = [s for s in embed_scores if s[1] >= min_score]
+        
+        if not embed_scores:
+            return []
+        
+        N = min(max(top_k * 3, 6), len(embed_scores))
+        candidates = embed_scores[:N]
+        kp_image, desc_image = self._img_to_sift(img)
 
-        return scores[:top_k]
+        hybrid_scores = []
+        for label, _ in candidates:
+            kp_ref, desc_ref = self.ref_sift[label]
+            hybrid_scores.append((label, self._sift_score(kp_image, desc_image, kp_ref, desc_ref)))
+        hybrid_scores.sort(key=lambda x: x[1], reverse=True)
+
+        return hybrid_scores[:top_k]

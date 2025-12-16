@@ -1,38 +1,54 @@
 import textwrap
 
-from tarot_rag import TarotRag
-
 from ollama import chat
+
+from src.tarot_rag import TarotRag
+from src.utils import load_prompt, project_root, Default
 
 
 class TarotQuestions:
     """
-    Note: The structure and wording of this prompt were refined with the help of
+    RAG-based Q&A module for tarot questions.
+
+    This class:
+    - Retrieves relevant snippets from the local tarot knowledge base (Chroma via TarotRag).
+    - Builds a user prompt that includes the retrieved context + the user's question.
+    - Queries a local Ollama model with strict instructions.
+    
+    Note: The structure and wording of the prompts were refined with the help of
     ChatGPT (OpenAI) to get clearer and more consistent readings.
     """
+
+    # Initialize the Q&A pipeline: retrieval settings, model name, and prompt templates.
     def __init__(self, model_name: str = 'llama3.2:3b', n_results = 4):
         self.model_name = model_name
         self.n_results = n_results
         self.tarot_rag = TarotRag()
 
-        self.SYSTEM_PROMPT = textwrap.dedent("""
-            Tu es un expert du tarot (histoire, structure du jeu, significations, usage divinatoire, etc.).
-            Tu réponds toujours en français, de manière claire, sous la forme d'un court paragraphe.
+        self.user_prompt_path = project_root() / 'data' / 'prompts' / 'questions_user.txt'
+        system_prompt_path = project_root() / 'data' / 'prompts' / 'questions_system.txt'
+        self.SYSTEM_PROMPT = load_prompt(system_prompt_path, textwrap.dedent("""
+            Tu es un assistant expert du tarot.
 
-            Tu dois t'appuyer STRICTEMENT sur les informations fournies dans la question.
-            - Si la réponse se trouve dans ces informations, tu la formules clairement.
-            - Si l'information n'est pas présente ou est insuffisante, tu dis que tu ne sais pas
-              ou que ce n'est pas indiqué.
-            - Si la question n'a rien à voir avec le tarot, tu expliques que ce n'est pas lié
-              à ton domaine d'expertise.
+            Règle d'utilisation :
+            Tu n'as le droit d'affirmer des faits QUE s'ils sont explicitement présents dans les extraits fournis dans le message utilisateur.
+            Tu n'utilises jamais tes connaissances générales.
 
-            Contraintes de style :
-            - Ne fais jamais de listes (pas de puces, pas de numérotation).
-            - N'utilise pas de titres.
-            - Ne parle pas de "contexte", de "documents" ou de "sources" dans ta réponse.
-            - Ne commence pas par des expressions comme "Selon le contexte fourni" ou "D'après ces informations".
-        """).strip()
+            Décision :
+            - Si la question n'est pas liée au tarot : réponds exactement une seule phrase :
+            "Je ne peux pas répondre : cette question ne concerne pas le tarot."
+            - Si la question est liée au tarot mais que l'information n'apparaît pas explicitement dans les extraits : réponds exactement une seule phrase :
+            "Je ne peux pas répondre de façon fiable : je n'ai pas assez d'informations."
+            - Sinon, réponds en français, en 1 à 3 phrases maximum, en un seul paragraphe.
 
+            Contraintes :
+            - Jamais de listes, jamais de titres.
+            - N'écris jamais de parenthèses, ni ouvrantes ni fermantes.
+            - Utilise uniquement des chiffres arabes 0-9, jamais de chiffres romains.
+            - Ne mentionne jamais des extraits, textes, documents, sources, contexte, base de connaissances.
+        """))
+
+    # Build the user prompt with retrieved context and the user's question.
     def _build_prompt(self, question):
         retrieved_docs = self.tarot_rag.query_chroma(question, self.n_results)['documents']
         if retrieved_docs:
@@ -40,20 +56,20 @@ class TarotQuestions:
         else:
             context = "Aucun contexte pertinent n'a pu être trouvé dans la base de connaissances sur le tarot."
 
-
-        return textwrap.dedent(f"""
+        prompt = load_prompt(self.user_prompt_path, textwrap.dedent("""
             Voici des extraits de textes de référence sur le tarot :
-
+            
             {context}
-
-            En t'appuyant uniquement sur ces informations, réponds à la question suivante
-            en un court paragraphe, sans listes et sans mentionner de contexte, de documents
-            ou de sources.
 
             Question :
             {question}
-        """).strip()
+        """), ['context', 'question'])
+
+        # Code inspired by https://stackoverflow.com/questions/3536303/python-string-format-suppress-silent-keyerror-indexerror
+        d = Default({'context': context, 'question': question})
+        return prompt.format_map(d)
     
+    # Get an answer from the model for the given question.
     def answer(self, question):
         prompt = self._build_prompt(question)
 
@@ -67,4 +83,4 @@ class TarotQuestions:
 if __name__ == '__main__':
     tarot_questions = TarotQuestions()
     print(tarot_questions.answer('Combien il y a de cartes de tarot dans un jeu?'))
-    print(tarot_questions.answer('Combien de pates a une araignée?'))
+    print(tarot_questions.answer('Combien de pattes a une araignée?'))

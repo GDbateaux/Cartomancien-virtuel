@@ -3,17 +3,31 @@ import re
 
 from ollama import chat
 
+from src.utils import load_prompt, project_root, Default
+
 
 class TarotReader:
     """
-    Tarot reading generation module.
+    Tarot reading generator (LLM via Ollama).
 
-    Note: The structure and wording of this prompt were refined with the help of
+    Given a list of recognized card names, this class builds a prompt and asks a local model
+    to produce a short, friendly interpretation in French.
+
+    Key points:
+    - Prompts are loaded from files when available, otherwise built-in defaults are used.
+    - The system prompt forces a concise 2-3 sentence reading with no lists or titles.
+
+    Note: The structure and wording of the prompts were refined with the help of
     ChatGPT (OpenAI) to get clearer and more consistent readings.
     """
+
+    # Initialize the reader, load prompts, and warm up the model.
     def __init__(self, model_name: str = 'llama3.2:3b'): 
         self.model_name = model_name
-        self.SYSTEM_PROMPT = textwrap.dedent("""
+
+        self.user_prompt_path = project_root() / 'data' / 'prompts' / 'reading_user.txt'
+        system_prompt_path = project_root() / 'data' / 'prompts' / 'reading_system.txt'
+        self.SYSTEM_PROMPT = load_prompt(system_prompt_path, textwrap.dedent("""
             Tu es un cartomancien expérimenté. Tu interprètes des tirages de tarot et
             tu réponds en français, avec un ton bienveillant et clair.
 
@@ -27,15 +41,16 @@ class TarotReader:
 
             Ne mentionne jamais l'informatique, le code, JSON ou le fait que tu es un modèle.
             Parle comme un humain.
-        """).strip()
+        """))
         self.predict(['fake card'])  # Warm-up the model
 
+    # Build the user prompt with the list of drawn cards.
     def _build_prompt(self, cards: list[str]):
         cards_desc = ''
         for card in cards:
             cards_desc += f'- {card}\n'
 
-        return textwrap.dedent(f"""
+        prompt = load_prompt(self.user_prompt_path, textwrap.dedent("""
             Voici le tirage (de gauche à droite) :
 
             {cards_desc}
@@ -49,8 +64,13 @@ class TarotReader:
 
             N'utilise ni listes, ni titres, ni mise en forme spéciale.
             Ne renvoie que le texte de la lecture.
-        """).strip()
+        """), ['cards_desc'])
 
+        # Code inspired by https://stackoverflow.com/questions/3536303/python-string-format-suppress-silent-keyerror-indexerror
+        d = Default({'cards_desc': cards_desc})
+        return prompt.format_map(d)
+
+    # Get an answer from the model for the given list of cards.
     def predict(self, cards: list[str]):
         prompt = self._build_prompt(cards)
 
@@ -61,6 +81,7 @@ class TarotReader:
             ])
         return response.message.content
 
+    # Streamed version of predict() that yields partial results as they arrive.
     def stream_predict(self, cards: list[str]):
         prompt = self._build_prompt(cards)
 
@@ -83,7 +104,7 @@ class TarotReader:
         yield sentence
 
 if __name__ == '__main__':
-    from tts import TTS
+    from src.tts import TTS
 
     reader = TarotReader()
     tts = TTS()

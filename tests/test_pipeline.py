@@ -12,6 +12,7 @@ DATA_DIR = Path(__file__).parent.parent / 'data'
 REF_DIR = DATA_DIR / 'cards'
 IMG_TEST_DIR = DATA_DIR / 'img_test'
 app = TarotApp(ref_dir=REF_DIR)
+app.stt.close()
 
 @pytest.mark.parametrize(
     'filename',
@@ -42,3 +43,4 @@ def test_card_pipeline_speed(filename, monkeypatch):
     print(f'{filename}: {mean_time*1000:.1f} ms')
 
     assert mean_time < MAX_TIME_PER_IMAGE
+
