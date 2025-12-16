@@ -5,7 +5,7 @@
 
 # Cartomancien-virtuel
 ## Description
-This application is a local virtual tarot assistant capable of detecting tarot cards from a live camera feed, recognizing them using a computer-vision pipeline, and generating interpretations through a local language model.  
+This application is a local virtual tarot assistant capable of detecting tarot cards from a live camera feed, recognizing them using a computer-vision pipeline, and generating interpretations through a local language model.
 It also includes a RAG system, allowing the user to ask general tarot-related questions and receive grounded, accurate answers.  
 
 ## Requirements
@@ -33,7 +33,6 @@ Two main flows:
 - **RAG-powered question answering** enabling responses about tarot structure, history, and symbolism.
 - **French text-to-speech** via Piper.
 - **French speech-to-text (STT)** for push-to-talk questions via Vosk.
-- **Automated project setup** with cross-platform scripts that install dependencies, pull LLM models, and download TTS voices.
 - **Test suite**, covering card extraction, card recognition, LLM response timing, and the tarot reading pipeline.
 - **User-configurable prompts & settings** via editable files in data/prompts/ and data/settings.json
 
@@ -52,9 +51,9 @@ ollama pull llama3.2:3b
 ```
 4. Run CartomancienVirtuel.exe.
 
-This application is fully local, but it still requires Ollama to run the language model.
+This application runs locally, but it requires Ollama to run the language model (and may need an Internet connection for the first-time model download).
 
-Optional: change the default camera in data/settings.json and adjust prompts in data/prompts/.
+Optional: change the default camera in data/settings.json, tweak prompts in data/prompts/, and customize the RAG data (data/tarot_data/) and reference cards (data/cards/).
 
 ### Installation (Manual)
 From the project root:
@@ -67,7 +66,7 @@ uv sync
 ollama pull llama3.2:3b
 ```
 
-### Downloading TTS voice models (Piper)
+#### Downloading TTS voice models (Piper)
 Before running the application, you must download at least one French Piper voice model (the default in the code is fr_FR-tom-medium).
 ```bash
 mkdir -p data/voices

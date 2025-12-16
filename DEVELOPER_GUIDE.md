@@ -150,3 +150,5 @@ Then open htmlcov/index.html in your browser to inspect the detailed coverage.
 
 - `test_tarot_reader.py`
     - Checks streaming “time to first sentence” and verifies prompt.
+
+Note: Some tests are intentionally designed to be challenging and may not always pass (e.g., difficult images) to highlight current limits and guide future improvements. Performance tests also measure timing and can vary depending on the machine, but they’re useful to track optimization gains over time.

@@ -23,7 +23,7 @@ ollama pull llama3.2:3b
 ```
 4. Run CartomancienVirtuel.exe.
 
-This application is fully local, but it still requires Ollama to run the language model.
+This application runs locally, but it requires Ollama to run the language model (and may need an Internet connection for the first-time model download).
 
 ### Manual setup
 
@@ -70,7 +70,7 @@ If the file is missing or invalid, the app falls back to the default camera (ind
 1) When the app starts, it speaks a short welcome message.
 2) Place exactly 3 cards in front of the camera.
 3) Hold them steady until detection is stable.
-4) When the three cards are recognized with enough confidence, the app generates a short reading (2–3 sentences) and speaks it aloud.
+4) When the three cards are recognized with enough confidence, the app generates a short reading and speaks it aloud.
 
 #### Tips for best detection
 - Avoid glare/reflections on glossy cards.
